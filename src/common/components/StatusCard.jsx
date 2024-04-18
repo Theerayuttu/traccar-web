@@ -15,6 +15,7 @@ import {
   Menu,
   MenuItem,
   CardMedia,
+  Tooltip,
 } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import CloseIcon from '@mui/icons-material/Close';
@@ -23,6 +24,8 @@ import PublishIcon from '@mui/icons-material/Publish';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PendingIcon from '@mui/icons-material/Pending';
+import LinkIcon from '@mui/icons-material/Link';
+import DataSaverOffIcon from '@mui/icons-material/DataSaverOff';
 
 import { useTranslation } from './LocalizationProvider';
 import RemoveDialog from './RemoveDialog';
@@ -36,7 +39,7 @@ import { useAttributePreference } from '../util/preferences';
 const useStyles = makeStyles((theme) => ({
   card: {
     pointerEvents: 'auto',
-    width: theme.dimensions.popupMaxWidth,
+    width: theme.dimensions.popupMaxWidth + 20,
   },
   media: {
     height: theme.dimensions.popupImageHeight,
@@ -127,7 +130,7 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
   const deviceImage = device?.attributes?.deviceImage;
 
   const positionAttributes = usePositionAttributes(t);
-  const positionItems = useAttributePreference('positionItems', 'fixTime,address,speed,totalDistance');
+  const positionItems = useAttributePreference('positionItems', 'fixTime,hours,ignition,fuel,power,adc2,rpm,fuelConsumption,coolantTemp');
 
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -189,13 +192,13 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
                     onClick={onClose}
                     onTouchStart={onClose}
                   >
-                    <CloseIcon fontSize="small" className={classes.mediaButton} />
+                    <CloseIcon fontSize="small" />
                   </IconButton>
                 </CardMedia>
               ) : (
                 <div className={classes.header}>
                   <Typography variant="body2" color="textSecondary">
-                    {device.name}
+                    ---
                   </Typography>
                   <IconButton
                     size="small"
@@ -206,6 +209,9 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
                   </IconButton>
                 </div>
               )}
+              <div className={classes.header}>
+                {device.name}
+              </div>
               {position && (
                 <CardContent className={classes.content}>
                   <Table size="small" classes={{ root: classes.table }}>
@@ -235,31 +241,47 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
                 >
                   <PendingIcon />
                 </IconButton>
-                <IconButton
-                  onClick={() => navigate('/replay')}
-                  disabled={disableActions || !position}
-                >
-                  <ReplayIcon />
-                </IconButton>
-                <IconButton
-                  onClick={() => navigate(`/settings/device/${deviceId}/command`)}
-                  disabled={disableActions}
-                >
-                  <PublishIcon />
-                </IconButton>
-                <IconButton
-                  onClick={() => navigate(`/settings/device/${deviceId}`)}
-                  disabled={disableActions || deviceReadonly}
-                >
-                  <EditIcon />
-                </IconButton>
-                <IconButton
-                  onClick={() => setRemoving(true)}
-                  disabled={disableActions || deviceReadonly}
-                  className={classes.delete}
-                >
-                  <DeleteIcon />
-                </IconButton>
+                <Tooltip title={`${t("sharedShowDetails")}`}>
+                  <IconButton
+                    onClick={() => navigate(`/positiondashboard/${position.id}`) }
+                    disabled={disableActions || !position}
+                  >
+                    <DataSaverOffIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title={`${t("deviceCommand")}`}>
+                  <IconButton
+                    onClick={() => navigate(`/settings/device/${deviceId}/command`)}
+                    disabled={disableActions}
+                  >
+                    <PublishIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title={`${t("sharedEdit")}`}>
+                  <IconButton
+                    onClick={() => navigate(`/settings/device/${deviceId}`)}
+                    disabled={disableActions || deviceReadonly}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title={`${t("sharedConnections")}`}>
+                  <IconButton
+                    onClick={() => navigate(`/settings/device/${deviceId}/connections`)}
+                    disabled={disableActions || deviceReadonly}
+                  >
+                    <LinkIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title={`${t("sharedRemove")}`}>
+                  <IconButton
+                    onClick={() => setRemoving(true)}
+                    disabled={disableActions || deviceReadonly}
+                    className={classes.delete}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Tooltip>
               </CardActions>
             </Card>
           </Draggable>
@@ -267,7 +289,7 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
       </div>
       {position && (
         <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}>
-          <MenuItem onClick={() => navigate(`/position/${position.id}`)}><Typography color="secondary">{t('sharedShowDetails')}</Typography></MenuItem>
+          <MenuItem onClick={() => navigate('/replay')}><Typography color="secondary">{t('reportReplay')}</Typography></MenuItem>
           <MenuItem onClick={handleGeofence}>{t('sharedCreateGeofence')}</MenuItem>
           <MenuItem component="a" target="_blank" href={`https://www.google.com/maps/search/?api=1&query=${position.latitude}%2C${position.longitude}`}>{t('linkGoogleMaps')}</MenuItem>
           <MenuItem component="a" target="_blank" href={`http://maps.apple.com/?ll=${position.latitude},${position.longitude}`}>{t('linkAppleMaps')}</MenuItem>

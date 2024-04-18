@@ -40,7 +40,7 @@ const PreferencesPage = () => {
   const user = useSelector((state) => state.session.user);
   const [attributes, setAttributes] = useState(user.attributes);
 
-  const versionApp = import.meta.env.VITE_APP_VERSION.slice(0, -2);
+  const versionApp = import.meta.env.VITE_APP_VERSION;
   const versionServer = useSelector((state) => state.session.server.version);
   const socket = useSelector((state) => state.session.socket);
 
@@ -149,7 +149,7 @@ const PreferencesPage = () => {
                   freeSolo
                   options={Object.keys(positionAttributes)}
                   getOptionLabel={(option) => (positionAttributes[option]?.name || option)}
-                  value={attributes.positionItems?.split(',') || ['fixTime', 'address', 'speed', 'totalDistance']}
+                  value={attributes.positionItems?.split(',') || ['speed', 'address', 'totalDistance', 'course']}
                   onChange={(_, option) => {
                     setAttributes({ ...attributes, positionItems: option.join(',') });
                   }}

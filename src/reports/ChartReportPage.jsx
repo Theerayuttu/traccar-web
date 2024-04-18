@@ -32,8 +32,8 @@ const ChartReportPage = () => {
   const hours12 = usePreference('twelveHourFormat');
 
   const [items, setItems] = useState([]);
-  const [types, setTypes] = useState(['speed']);
-  const [type, setType] = useState('speed');
+  const [types, setTypes] = useState(['fuel']);
+  const [type, setType] = useState('fuel');
 
   const values = items.map((it) => it[type]);
   const minValue = Math.min(...values);
@@ -135,12 +135,12 @@ const ChartReportPage = () => {
                 tickFormatter={(value) => value.toFixed(2)}
                 domain={[minValue - valueRange / 5, maxValue + valueRange / 5]}
               />
-              <CartesianGrid strokeDasharray="3 3" />
+              {/*<CartesianGrid strokeDasharray="3 3" />*/}
               <Tooltip
                 formatter={(value, key) => [value, positionAttributes[key]?.name || key]}
                 labelFormatter={(value) => formatTime(value, 'seconds', hours12)}
               />
-              <Line type="monotone" dataKey={type} />
+              <Line type="monotone" dataKey={type} dot={false} />
             </LineChart>
           </ResponsiveContainer>
         </div>

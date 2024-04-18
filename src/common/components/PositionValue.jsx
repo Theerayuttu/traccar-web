@@ -64,13 +64,18 @@ const PositionValue = ({ position, property, attribute }) => {
         return formatAltitude(value, altitudeUnit, t);
       case 'power':
       case 'battery':
-        return formatVoltage(value, t);
+        if (typeof value === 'number') {
+          return formatVoltage(value.toFixed(1), t);
+        }
+        else {
+          return '-';
+        }
       case 'batteryLevel':
         return value != null ? formatPercentage(value, t) : '';
       case 'volume':
         return value != null ? formatVolume(value, volumeUnit, t) : '';
       case 'fuelConsumption':
-        return value != null ? formatConsumption(value, t) : '';
+        return value != null ? formatConsumption(value.toFixed(1), t) : '';
       case 'coolantTemp':
         return formatTemperature(value);
       case 'alarm':
@@ -105,7 +110,7 @@ const PositionValue = ({ position, property, attribute }) => {
         <>
           {formatValue(value)}
           &nbsp;&nbsp;
-          {admin && <Link component={RouterLink} underline="none" to={`/settings/accumulators/${position.deviceId}`}>&#9881;</Link>}
+          {admin && <Link component={RouterLink} underline="always" to={`/settings/accumulators/${position.deviceId}`}>&#9881; {t('sharedEdit')}</Link>}
         </>
       );
     case 'address':

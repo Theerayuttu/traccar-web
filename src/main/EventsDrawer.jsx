@@ -65,7 +65,7 @@ const EventsDrawer = ({ open, onClose }) => {
             disabled={!event.id}
           >
             <ListItemText
-              primary={`${devices[event.deviceId]?.name} • ${formatType(event)}`}
+              primary={ event.type == 'maintenance' ? event.id + '•' + event.attributes.message.slice(0,event.attributes.message.length - 23) : `${devices[event.deviceId]?.name} • ${formatType(event)}`}
               secondary={formatTime(event.eventTime, 'seconds', hours12)}
             />
             <IconButton size="small" onClick={() => dispatch(eventsActions.delete(event))}>

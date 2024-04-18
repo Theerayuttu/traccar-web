@@ -78,7 +78,7 @@ const CombinedReportPage = () => {
           <div className={classes.header}>
             <ReportFilter handleSubmit={handleSubmit} showOnly multiDevice includeGroups />
           </div>
-          <Table>
+          <Table stickyHeader aria-label="sticky table">
             <TableHead>
               <TableRow>
                 <TableCell>{t('sharedDevice')}</TableCell>

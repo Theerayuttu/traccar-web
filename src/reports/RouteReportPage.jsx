@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useState } from 'react';
+import React, { Fragment, useCallback, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -6,6 +6,9 @@ import {
 } from '@mui/material';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import LocationSearchingIcon from '@mui/icons-material/LocationSearching';
+import ArrowCircleDownIcon from '@mui/icons-material/ArrowCircleDown';
+import { useDownloadExcel  } from 'react-export-table-to-excel';
+import Tooltip from '@mui/material/Tooltip';
 import ReportFilter from './components/ReportFilter';
 import { useTranslation } from '../common/components/LocalizationProvider';
 import PageLayout from '../common/components/PageLayout';
@@ -34,7 +37,7 @@ const RouteReportPage = () => {
   const devices = useSelector((state) => state.devices.items);
 
   const [available, setAvailable] = useState([]);
-  const [columns, setColumns] = useState(['fixTime', 'latitude', 'longitude', 'speed', 'address']);
+  const [columns, setColumns] = useState(['fixTime', 'address', 'hours', 'ignition', 'power','fuel']);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -95,6 +98,14 @@ const RouteReportPage = () => {
     }
   });
 
+  const tableRef = useRef(null);
+
+  const { onDownload } = useDownloadExcel({
+    currentTableRef: tableRef.current,
+    filename: 'RouteReport',
+    sheet: 'RouteReport'
+  });
+
   return (
     <PageLayout menu={<ReportsMenu />} breadcrumbs={['reportTitle', 'reportRoute']}>
       <div className={classes.container}>
@@ -128,10 +139,16 @@ const RouteReportPage = () => {
               />
             </ReportFilter>
           </div>
-          <Table>
+          <Table ref={tableRef} stickyHeader aria-label="sticky table" >
             <TableHead>
               <TableRow>
-                <TableCell className={classes.columnAction} />
+                <TableCell className={classes.columnAction}>
+                  <Tooltip title="Download to excel">
+                    <IconButton size="small" color="info" aria-label="download to excel" onClick={onDownload}>
+                      <ArrowCircleDownIcon />
+                    </IconButton>
+                  </Tooltip>
+                </TableCell> 
                 <TableCell>{t('sharedDevice')}</TableCell>
                 {columns.map((key) => (<TableCell key={key}>{positionAttributes[key]?.name || key}</TableCell>))}
               </TableRow>

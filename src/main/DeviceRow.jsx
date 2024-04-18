@@ -10,6 +10,7 @@ import Battery60Icon from '@mui/icons-material/Battery60';
 import BatteryCharging60Icon from '@mui/icons-material/BatteryCharging60';
 import Battery20Icon from '@mui/icons-material/Battery20';
 import BatteryCharging20Icon from '@mui/icons-material/BatteryCharging20';
+import BuildCircleIcon from '@mui/icons-material/BuildCircle';
 import ErrorIcon from '@mui/icons-material/Error';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -60,6 +61,9 @@ const DeviceRow = ({ data, index, style }) => {
   const item = data[index];
   const position = useSelector((state) => state.session.positions[item.id]);
 
+  const events = useSelector((state) => state.events.items.filter((e) =>  e.deviceId === position.deviceId));
+  const eventid = events[0];
+
   const devicePrimary = useAttributePreference('devicePrimary', 'name');
   const deviceSecondary = useAttributePreference('deviceSecondary', '');
 
@@ -78,6 +82,18 @@ const DeviceRow = ({ data, index, style }) => {
     );
   };
 
+  const getStatusColorIcon = (item) => {
+    switch (item.status) {
+      case 'online':
+        return 'green';
+      case 'offline':
+        return 'red';
+      case 'unknown':
+      default:
+        return 'gray';
+    }
+  };
+
   return (
     <div style={style}>
       <ListItemButton
@@ -86,7 +102,8 @@ const DeviceRow = ({ data, index, style }) => {
         disabled={!admin && item.disabled}
       >
         <ListItemAvatar>
-          <Avatar>
+          <Avatar style={{ background: getStatusColorIcon(item) }} >
+            {/** src={"/api/media/9172961569/device.jpeg"} */}
             <img className={classes.icon} src={mapIcons[mapIconKey(item.category)]} alt="" />
           </Avatar>
         </ListItemAvatar>
@@ -105,11 +122,23 @@ const DeviceRow = ({ data, index, style }) => {
                 </IconButton>
               </Tooltip>
             )}
+            {/**Add Events Maintenance */}
+            {eventid &&  (
+              <>
+                { (eventid.hasOwnProperty('type') && eventid.deviceId === position.deviceId) && (
+                  <Tooltip title={`${eventid.attributes.message}`}>
+                    <IconButton size="small">
+                      <BuildCircleIcon fontSize="medium" className={classes.warning} />
+                    </IconButton>
+                  </Tooltip>
+                )}
+              </>
+            )}
             {position.attributes.hasOwnProperty('ignition') && (
               <Tooltip title={`${t('positionIgnition')}: ${formatBoolean(position.attributes.ignition, t)}`}>
                 <IconButton size="small">
                   {position.attributes.ignition ? (
-                    <EngineIcon width={20} height={20} className={classes.success} />
+                    <EngineIcon width={25} height={25} className={classes.success} />
                   ) : (
                     <EngineIcon width={20} height={20} className={classes.neutral} />
                   )}

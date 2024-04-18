@@ -60,7 +60,7 @@ const StatisticsPage = () => {
           <ColumnSelect columns={columns} setColumns={setColumns} columnsArray={columnsArray} />
         </ReportFilter>
       </div>
-      <Table>
+      <Table stickyHeader aria-label="sticky table">
         <TableHead>
           <TableRow>
             {columns.map((key) => (<TableCell key={key}>{t(columnsMap.get(key))}</TableCell>))}
